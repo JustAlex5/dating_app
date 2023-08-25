@@ -1,14 +1,14 @@
 ﻿using System.Net;
 using DatingAppAPI.DbData;
 using DatingAppAPI.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace DatingAppAPI.Controllers;
 
-[ApiController]
-[Route("api/[Controller]")] // api/users
-public class UsersController:ControllerBase
+[Authorize]
+public class UsersController:BaseApiController
 {
     private readonly DataContext _context;
 
