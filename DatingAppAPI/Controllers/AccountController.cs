@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace DatingAppAPI.Controllers;
-[Authorize]
+
 public class AccountController:BaseApiController
 {
     private readonly DataContext _context;
@@ -20,7 +20,6 @@ public class AccountController:BaseApiController
         _context = dataContext;
         _tokenService = tokenService;
     }
-    [AllowAnonymous]
     [HttpPost("register")]
     public async Task<ActionResult<AppUser>> Register(RegisterDto registerDto)
     {
@@ -41,7 +40,6 @@ public class AccountController:BaseApiController
             return user;
             
     }
-
     [HttpPost("login")]
     public async Task<ActionResult<UserDto>> Login(LoginDto loginDto)
     {
