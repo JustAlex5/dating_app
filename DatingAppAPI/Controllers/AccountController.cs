@@ -21,7 +21,7 @@ public class AccountController:BaseApiController
         _tokenService = tokenService;
     }
     [HttpPost("register")]
-    public async Task<ActionResult<AppUser>> Register(RegisterDto registerDto)
+    public async Task<ActionResult<UserDto>> Register(RegisterDto registerDto)
     {
         if ( await UserExists(registerDto.Username.ToLower()))         return BadRequest("This user name has been taken");
 
@@ -37,8 +37,12 @@ public class AccountController:BaseApiController
 
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
-            return user;
-            
+        return new UserDto()
+        {
+            Username = user.UserName,
+            Token = _tokenService.CreateToken(user)
+        };
+
     }
     [HttpPost("login")]
     public async Task<ActionResult<UserDto>> Login(LoginDto loginDto)
