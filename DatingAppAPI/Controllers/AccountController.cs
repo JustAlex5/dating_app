@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace DatingAppAPI.Controllers;
-[Authorize]
+
 public class AccountController:BaseApiController
 {
     private readonly DataContext _context;
@@ -20,9 +20,8 @@ public class AccountController:BaseApiController
         _context = dataContext;
         _tokenService = tokenService;
     }
-    [AllowAnonymous]
     [HttpPost("register")]
-    public async Task<ActionResult<AppUser>> Register(RegisterDto registerDto)
+    public async Task<ActionResult<UserDto>> Register(RegisterDto registerDto)
     {
         if ( await UserExists(registerDto.Username.ToLower()))         return BadRequest("This user name has been taken");
 
@@ -38,10 +37,13 @@ public class AccountController:BaseApiController
 
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
-            return user;
-            
-    }
+        return new UserDto()
+        {
+            Username = user.UserName,
+            Token = _tokenService.CreateToken(user)
+        };
 
+    }
     [HttpPost("login")]
     public async Task<ActionResult<UserDto>> Login(LoginDto loginDto)
     {
@@ -54,7 +56,7 @@ public class AccountController:BaseApiController
         
         for(int i=0; i<computedHas.Length; i++)
         {
-            if (computedHas[i] != user.PasswordHash[i]) return Unauthorized("password incorrect");
+            if (computedHas[i] != user.PasswordHash[i]) return Unauthorized();
         }
 
         return new UserDto()
